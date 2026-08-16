@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Get A Quote — G.S. Construction</title>
+<meta name="description" content="Request a free, no-obligation quote from G.S. Construction for your residential, commercial, industrial or civil project." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="blueprint-grid" aria-hidden="true"></div>
+<div class="glow-field" aria-hidden="true">
+  <div class="glow-orb amber"></div>
+  <div class="glow-orb steel"></div>
+</div>
+<div class="reg-mark tl" aria-hidden="true"></div>
+<div class="reg-mark tr" aria-hidden="true"></div>
+<div class="reg-mark bl" aria-hidden="true"></div>
+<div class="reg-mark br" aria-hidden="true"></div>
+
+<nav class="site-nav">
+  <div class="wrap">
+    <a href="index.html" class="brand-mark" aria-label="G.S. Construction — home">
+      <span class="monogram">GS</span>
+      <span class="brand-full">G.S. <span>CONSTRUCTION</span></span>
+    </a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="details.html#profile">Profile</a>
+      <a href="details.html#services">Services</a>
+      <a href="details.html#portfolio">Portfolio</a>
+      <a href="details.html#contact">Contact</a>
+    </div>
+    <a href="index.html" class="nav-cta">← Home</a>
+    <button class="nav-toggle" aria-label="Toggle menu">≡</button>
+  </div>
+</nav>
+
+<main>
+  <header class="page-header">
+    <div class="wrap">
+      <p class="eyebrow">Page 03 &nbsp;·&nbsp; Start A Project</p>
+      <h1 class="title">Get A<br />Quote.</h1>
+      <p class="lede">
+        Share a few details about your project and our team will follow up
+        with a detailed, no-obligation estimate — usually within one
+        business day.
+      </p>
+    </div>
+  </header>
+
+  <section>
+    <div class="wrap">
+      <div class="quote-layout">
+
+        <!-- ============ FORM ============ -->
+        <div>
+          <form class="quote-form reveal" id="quote-form" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="full-name">Your Name <span class="req">*</span></label>
+                <input type="text" id="full-name" name="full-name" placeholder="e.g. Rohan Deshmukh" required />
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone Number <span class="req">*</span></label>
+                <input type="tel" id="phone" name="phone" placeholder="+91 XXXXX XXXXX" pattern="[0-9+\-\s]{7,15}" required />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email">Email Address <span class="req">*</span></label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" required />
+            </div>
+
+            <div class="form-group">
+              <label for="project-type">Project Type <span class="req">*</span></label>
+              <select id="project-type" name="project-type" required>
+                <option value="" disabled selected>Select a project type</option>
+                <option value="residential">Residential Construction</option>
+                <option value="commercial">Commercial Construction</option>
+                <option value="industrial">Industrial Construction</option>
+                <option value="civil">Civil &amp; Infrastructure Works</option>
+                <option value="renovation">Renovation &amp; Maintenance</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="project-details">Tell Us About Your Project <span class="req">*</span></label>
+              <textarea id="project-details" name="project-details" placeholder="Location, approximate size, timeline, budget range, and anything else that helps us understand the scope..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn form-submit">Submit Request</button>
+            <p class="form-note">We'll never share your details. You'll hear back from our team directly.</p>
+          </form>
+
+          <div class="form-success" id="quote-success">
+            <span class="stamp">Request Received</span>
+            <h3>Thank you.</h3>
+            <p>
+              Your project details have been noted. A member of the G.S.
+              Construction team will reach out shortly to discuss the next
+              steps.
+            </p>
+          </div>
+        </div>
+
+        <!-- ============ INFO PANEL ============ -->
+        <div class="quote-info reveal">
+          <p class="sheet-label" style="margin-bottom:10px;">How It Works</p>
+          <div class="info-step">
+            <span class="step-no">01</span>
+            <div><h4>Share Your Brief</h4><p>Tell us what you're building, where, and roughly when.</p></div>
+          </div>
+          <div class="info-step">
+            <span class="step-no">02</span>
+            <div><h4>We Review &amp; Assess</h4><p>Our team evaluates scope, materials, and feasibility.</p></div>
+          </div>
+          <div class="info-step">
+            <span class="step-no">03</span>
+            <div><h4>Site Consultation</h4><p>We arrange a visit or call to confirm the details.</p></div>
+          </div>
+          <div class="info-step">
+            <span class="step-no">04</span>
+            <div><h4>Receive Your Quote</h4><p>A detailed, transparent estimate lands in your inbox.</p></div>
+          </div>
+
+          <div class="direct-contact">
+            <h4>Prefer To Talk Directly?</h4>
+            <a href="tel:+91XXXXXXXXXX">+91 XXXXXXXXXX</a>
+            <a href="mailto:info@gsconstruction.com">info@gsconstruction.com</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-col">
+        <div class="footer-tagline">Building trust.<br />Delivering quality.<br />Creating the future.</div>
+      </div>
+      <div class="footer-col">
+        <h4>Navigate</h4>
+        <a href="index.html">Home</a>
+        <a href="details.html#profile">Company Profile</a>
+        <a href="details.html#services">Services</a>
+        <a href="details.html#portfolio">Portfolio</a>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <p>+91 XXXXXXXXXX</p>
+        <p>info@gsconstruction.com</p>
+        <p>Maharashtra, India</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 G.S. Construction. All rights reserved.</span>
+      <span>Build Stronger Than Ever</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
