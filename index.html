@@ -1,0 +1,2155 @@
+<!DOCTYPE html>
+<!--
+  ==========================================================================
+   G.S. CONSTRUCTION — everything lives in THIS file (plus the /assets folder)
+  ==========================================================================
+   HOW THE FILE IS ORGANISED  (use Ctrl/Cmd+F and search for the names below)
+     1. <style> ........ all the CSS.  Search:  "PAGES 2-5"  "HERO VIDEO"  "ADMIN PANEL"
+     2. NAVBAR / HERO / About / Services / Portfolio / Contact / footer  (the page markup)
+     3. ADMIN PANEL .... the gallery admin (opens at  index.html#admin)
+     4. JAVASCRIPT ...... at the very bottom of the file.  Search:  "HERO VIDEO"  "PORTFOLIO SLIDES"  "Site Gallery"
+
+   THINGS YOU MAY WANT TO CHANGE
+     - Admin username / password ..... search  GS_ADMIN_USER  (near "Site Gallery" in the script)
+     - Page 1 video .................. the <video id="heroVideo"> tag; files are assets/hero-landscape.* and
+                                       assets/hero-portrait.*  (see the note under "HERO" below)
+     - How long the video takes ...... search  "const screens"  (bigger number = more scrolling)
+     - Page 2-5 images ............... search  ".photo-about"  (About, Services, Portfolio, Contact)
+     - How long Portfolio waits ...... search  "--portfolio-dwell"
+     - Colours, fonts ................ the :root block at the top of the <style>
+  ==========================================================================
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1a33">
+<title>G.S. Construction | Build Stronger Than Ever</title>
+<meta name="description" content="G.S. Construction — trusted construction and infrastructure development company, established 2014.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   G.S. CONSTRUCTION — Classic Corporate Theme
+   Navy / Gold / Cream palette, serif headings, subtle motion
+   ============================================================ */
+
+:root{
+  --navy: #142850;
+  --navy-dark: #0b1a33;
+  --navy-light: #22406f;
+  --gold: #c8a24a;
+  --gold-light: #e4c67a;
+  --cream: #f7f4ee;
+  --cream-dark: #efe9dc;
+  --white: #ffffff;
+  --text: #24282e;
+  --text-soft: #5b6270;
+  --border: rgba(20,40,80,0.12);
+  --shadow: 0 10px 30px rgba(11,26,51,0.10);
+  --shadow-lg: 0 20px 50px rgba(11,26,51,0.18);
+  --radius: 6px;
+  --nav-h: 84px;
+  --ease: cubic-bezier(.22,.61,.36,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{
+  scroll-behavior:smooth;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;   /* iOS: no font inflation in landscape */
+  overscroll-behavior-y:none;                            /* Android: pull-down at the top must not reload the page */
+  -webkit-tap-highlight-color:transparent;
+}
+a,button,.btn,.nav-toggle{touch-action:manipulation;}     /* no 300ms tap delay */
+body{
+  font-family:'Inter',sans-serif;
+  color:var(--text);
+  background:var(--navy-dark);
+  line-height:1.65;
+  padding-top:var(--nav-h);
+}
+h1,h2,h3,h4{
+  font-family:'Playfair Display',serif;
+  color:var(--navy);
+  line-height:1.2;
+  font-weight:700;
+}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+ul{list-style:none;}
+.container{max-width:1180px;margin:0 auto;padding:0 32px;}
+section{padding:100px 0;position:relative;}
+.section-tight{padding:64px 0;}
+
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--gold-deep,#8a6a1c);
+  font-size:.78rem;
+  font-weight:600;
+  display:inline-block;
+  margin-bottom:14px;
+}
+.section-head{max-width:680px;margin:0 auto 56px;text-align:center;}
+.section-head h2{font-size:2.4rem;margin-bottom:16px;}
+.section-head p{color:var(--text-soft);font-size:1.05rem;}
+.divider{
+  width:64px;height:3px;background:var(--gold);margin:18px auto 0;
+}
+.section-head .divider{margin:18px auto 0;}
+
+/* ---------- Buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:15px 34px;
+  font-family:'Inter',sans-serif;
+  font-weight:600;font-size:.92rem;
+  letter-spacing:.02em;
+  border-radius:2px;
+  cursor:pointer;border:1px solid transparent;
+  transition:transform .35s var(--ease), box-shadow .35s var(--ease), background .3s, color .3s, border-color .3s;
+}
+.btn-gold{background:var(--gold);color:var(--navy-dark);}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(200,162,74,.35);}
+.btn-outline{background:transparent;border-color:var(--white);color:var(--white);}
+.btn-outline:hover{background:var(--white);color:var(--navy);transform:translateY(-3px);}
+.btn-navy{background:var(--navy);color:var(--white);}
+.btn-navy:hover{background:var(--navy-dark);transform:translateY(-3px);box-shadow:var(--shadow-lg);}
+
+/* ---------- Navbar ---------- */
+.navbar{
+  position:fixed;top:0;left:0;right:0;height:var(--nav-h);
+  z-index:1000;
+  display:flex;align-items:center;
+  transition:box-shadow .4s ease;
+}
+.navbar::before{                      /* frosted background (a pseudo-element keeps the drawer positioned to the screen) */
+  content:'';position:absolute;top:0;right:0;bottom:0;left:0;z-index:-1;
+  background:rgba(247,244,238,0.72);
+  -webkit-backdrop-filter:blur(16px) saturate(1.5);
+  backdrop-filter:blur(16px) saturate(1.5);
+  border-bottom:1px solid var(--border);
+  transition:background .4s ease;
+}
+.navbar.on-dark::before{background:rgba(11,26,51,0.7);border-bottom-color:rgba(255,255,255,.12);}
+.navbar.on-dark .brand-text .tag{color:var(--gold);}
+.navbar.scrolled{box-shadow:0 6px 24px rgba(11,26,51,.10);}
+.nav-inner{
+  width:100%;max-width:1240px;margin:0 auto;padding:0 32px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand-mark{width:46px;height:46px;flex-shrink:0;}
+.brand-text{display:flex;flex-direction:column;line-height:1.05;}
+.brand-text .name{
+  font-family:'Playfair Display',serif;font-weight:700;
+  font-size:1.28rem;color:var(--navy);letter-spacing:.01em;
+}
+.navbar.on-dark .brand-text .name{color:var(--white);}
+.brand-text .tag{
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep,#8a6a1c);
+  margin-top:3px;
+}
+.nav-links{display:flex;align-items:center;gap:38px;}
+.nav-links a{
+  font-size:.92rem;font-weight:600;color:var(--text);
+  position:relative;padding:6px 0;transition:color .3s;
+}
+.navbar.on-dark .nav-links a{color:rgba(255,255,255,.88);}
+.nav-links a::after{
+  content:'';position:absolute;left:0;bottom:0;height:2px;width:0;
+  background:var(--gold);transition:width .35s var(--ease);
+}
+.nav-links a:hover,.nav-links a.active{color:var(--navy);}
+.navbar.on-dark .nav-links a:hover,.navbar.on-dark .nav-links a.active{color:var(--gold-light);}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%;}
+.nav-cta{margin-left:6px;padding:11px 24px;font-size:.85rem;}
+
+.nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;z-index:1100;background:none;border:none;padding:8px;}
+.nav-toggle span{width:26px;height:2px;background:var(--navy);transition:all .35s var(--ease);}
+.navbar.on-dark .nav-toggle span{background:var(--white);}
+.nav-toggle.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-toggle.open span:nth-child(2){opacity:0;}
+.nav-toggle.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+@media(max-width:900px){
+  .nav-links{
+    position:fixed;top:0;right:0;height:100vh;height:100dvh;width:min(78vw,340px);
+    background:rgba(11,26,51,.97);flex-direction:column;justify-content:center;
+    align-items:flex-start;padding:0 44px;gap:30px;
+    transform:translateX(100%);visibility:hidden;
+    transition:transform .5s var(--ease), visibility 0s linear .5s;
+  }
+  .nav-links.open{transform:translateX(0);visibility:visible;transition:transform .5s var(--ease), visibility 0s;}
+  .nav-links a{color:var(--white)!important;font-size:1.1rem;}
+  .nav-cta{margin-left:0;}
+  .nav-toggle{display:flex;}
+}
+
+/* ---------- Hero (blank / video page 1) ---------- */
+.hero-blank{
+  position:relative;height:100vh;width:100%;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--navy-dark) center/cover no-repeat;overflow:hidden;
+}
+.hero-blank video, .hero-blank .video-fallback{
+  position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;object-fit:cover;
+  opacity:1;
+}
+.hero-blank .video-fallback{
+  background:
+    radial-gradient(circle at 30% 20%, rgba(200,162,74,.18), transparent 60%),
+    linear-gradient(160deg,#0b1a33,#142850 55%,#0b1a33);
+}
+.hero-blank canvas{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;}
+.hero-blank .hero-hint{
+  position:relative;z-index:2;text-align:center;color:rgba(255,255,255,.55);
+  font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;
+}
+.scroll-cue{
+  position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+  z-index:2;display:flex;flex-direction:column;align-items:center;gap:8px;
+  color:rgba(255,255,255,.7);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+}
+.scroll-cue .line{width:1px;height:34px;background:linear-gradient(var(--gold),transparent);animation:scrollpulse 1.8s infinite;}
+@keyframes scrollpulse{0%{opacity:.2;transform:scaleY(.4);transform-origin:top;}50%{opacity:1;transform:scaleY(1);transform-origin:top;}100%{opacity:.2;transform:scaleY(.4);transform-origin:top;}}
+
+/* ---------- Page headers (pages 2-5) ---------- */
+.page-header{
+  position:relative;padding:190px 0 90px;color:var(--white);
+  background:linear-gradient(160deg,#0b1a33,#142850 60%,#1a3665);
+  overflow:hidden;text-align:center;
+  scroll-margin-top:var(--nav-h);
+}
+section[id]{scroll-margin-top:var(--nav-h);}
+.page-header canvas{position:absolute;top:0;right:0;bottom:0;left:0;width:100%;height:100%;opacity:.5;}
+.page-header .inner{position:relative;z-index:2;}
+.page-header .eyebrow{color:var(--gold-light);}
+.page-header h1{color:var(--white);font-size:clamp(2.4rem,5vw,3.6rem);}
+.page-header p{color:rgba(255,255,255,.75);max-width:600px;margin:16px auto 0;}
+.breadcrumb{
+  position:relative;z-index:2;margin-top:22px;font-size:.82rem;
+  color:rgba(255,255,255,.55);font-family:'JetBrains Mono',monospace;letter-spacing:.05em;
+}
+.breadcrumb a{color:var(--gold-light);}
+
+/* ---------- Reveal-on-scroll ---------- */
+.reveal{opacity:0;transform:translateY(34px);transition:opacity .8s var(--ease), transform .8s var(--ease);}
+.reveal.in{opacity:1;transform:translateY(0);}
+.reveal-scale{opacity:0;transform:scale(.94);transition:opacity .8s var(--ease), transform .8s var(--ease);}
+.reveal-scale.in{opacity:1;transform:scale(1);}
+
+/* slide left->right on scroll (services page) */
+.slide-left{opacity:0;transform:translateX(-90px);transition:opacity .9s var(--ease), transform .9s var(--ease);}
+.slide-left.in{opacity:1;transform:translateX(0);}
+.slide-right{opacity:0;transform:translateX(90px);transition:opacity .9s var(--ease), transform .9s var(--ease);}
+.slide-right.in{opacity:1;transform:translateX(0);}
+
+/* ---------- Grids / Cards ---------- */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;}
+@media(max-width:960px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+
+.card{
+  background:var(--white);border:1px solid var(--border);border-radius:var(--radius);
+  padding:38px 30px;transition:transform .4s var(--ease), box-shadow .4s var(--ease);
+}
+.card:hover{transform:translateY(-8px);box-shadow:var(--shadow-lg);}
+.card .icon{
+  width:52px;height:52px;border-radius:50%;background:var(--cream-dark);
+  display:flex;align-items:center;justify-content:center;margin-bottom:20px;color:var(--gold);
+}
+.card h3{font-size:1.2rem;margin-bottom:10px;}
+.card p{color:var(--text-soft);font-size:.95rem;}
+
+.value-chip{
+  display:flex;align-items:center;gap:12px;background:var(--white);
+  border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;
+  transition:transform .3s var(--ease), border-color .3s;
+}
+.value-chip:hover{transform:translateY(-4px);border-color:var(--gold);}
+.value-chip .dot{width:8px;height:8px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+
+/* ---------- Stats / counters ---------- */
+.stats-band{background:var(--navy);color:var(--white);padding:70px 0;}
+.stats-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px;text-align:center;}
+@media(max-width:900px){.stats-grid{grid-template-columns:repeat(2,1fr);}}
+.stat h3{
+  color:var(--gold-light);font-family:'Playfair Display',serif;font-size:2.6rem;margin-bottom:6px;
+}
+.stat p{color:rgba(255,255,255,.7);font-size:.82rem;letter-spacing:.05em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;}
+
+/* ---------- Timeline ---------- */
+.timeline{border-left:2px solid var(--border);margin-left:14px;}
+.timeline li{position:relative;padding:0 0 30px 32px;}
+.timeline li::before{
+  content:'';position:absolute;left:-7px;top:4px;width:12px;height:12px;border-radius:50%;
+  background:var(--gold);border:3px solid var(--cream);
+}
+.timeline li strong{color:var(--navy);}
+
+/* ---------- Table (company at a glance) ---------- */
+.glance-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.glance-table tr{border-bottom:1px solid var(--border);}
+.glance-table tr:last-child{border-bottom:none;}
+.glance-table td{padding:16px 24px;font-size:.95rem;}
+.glance-table td:first-child{font-weight:700;color:var(--navy);width:38%;background:var(--cream-dark);}
+
+/* ---------- Services (page 3) slides ---------- */
+.service-slide{
+  display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;
+  padding:70px 0;border-bottom:1px solid var(--border);
+}
+.service-slide:last-child{border-bottom:none;}
+.service-slide.reverse{direction:rtl;}
+.service-slide.reverse > *{direction:ltr;}
+.service-media{
+  aspect-ratio:4/3;border-radius:var(--radius);overflow:hidden;position:relative;box-shadow:var(--shadow-lg);
+}
+.service-media img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease);}
+.service-slide:hover .service-media img{transform:scale(1.06);}
+.service-media .num{
+  position:absolute;top:16px;left:16px;background:var(--gold);color:var(--navy-dark);
+  font-family:'Playfair Display',serif;font-weight:700;font-size:1.3rem;
+  width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+}
+.service-copy h3{font-size:1.7rem;margin-bottom:14px;}
+.service-copy p{color:var(--text-soft);margin-bottom:18px;}
+.service-copy ul li{
+  padding:8px 0 8px 26px;position:relative;font-size:.94rem;color:var(--text);border-bottom:1px dashed var(--border);
+}
+.service-copy ul li::before{content:'—';position:absolute;left:0;color:var(--gold);font-weight:700;}
+@media(max-width:800px){
+  .service-slide,.service-slide.reverse{grid-template-columns:1fr;direction:ltr;}
+}
+
+.industry-chips{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+.industry-chips span{
+  background:var(--white);border:1px solid var(--border);padding:10px 20px;border-radius:30px;
+  font-size:.86rem;font-weight:600;color:var(--navy);transition:all .3s;
+}
+.industry-chips span:hover{background:var(--navy);color:var(--white);border-color:var(--navy);transform:translateY(-3px);}
+
+/* ---------- Portfolio (page 4) ---------- */
+.project-card{position:relative;border-radius:var(--radius);overflow:hidden;aspect-ratio:4/3;box-shadow:var(--shadow);}
+.project-card img{width:100%;height:100%;object-fit:cover;transition:transform .7s var(--ease);}
+.project-card:hover img{transform:scale(1.08);}
+.project-card .overlay{
+  position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(0deg,rgba(11,26,51,.5),rgba(11,26,51,0) 55%);
+  display:flex;align-items:flex-end;padding:16px;
+}
+.project-card .overlay h4{color:var(--white);font-size:1.15rem;}
+.project-card .overlay p{color:rgba(255,255,255,.75);font-size:.85rem;margin-top:4px;}
+
+.story-card{border-left:3px solid var(--gold);padding:26px 28px;background:var(--white);border-radius:0 var(--radius) var(--radius) 0;box-shadow:var(--shadow);}
+.story-card h4{margin-bottom:8px;font-size:1.1rem;}
+.story-card p{color:var(--text-soft);font-size:.94rem;}
+
+/* Gallery grid (admin-managed) */
+.gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
+@media(max-width:960px){.gallery-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:560px){.gallery-grid{grid-template-columns:1fr;}}
+.gallery-item{border-radius:var(--radius);overflow:hidden;position:relative;box-shadow:var(--shadow);aspect-ratio:1/1;background:var(--cream-dark);}
+.gallery-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s var(--ease);}
+.gallery-item:hover img{transform:scale(1.1);}
+.gallery-item .cap{
+  position:absolute;left:0;right:0;bottom:0;padding:12px 14px;
+  background:linear-gradient(0deg,rgba(11,26,51,.85),transparent);
+  color:var(--white);font-size:.85rem;font-weight:600;
+}
+.gallery-empty{
+  grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text-soft);
+  border:1px dashed var(--border);border-radius:var(--radius);
+}
+
+/* ---------- Contact (page 5) ---------- */
+.contact-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;}
+@media(max-width:900px){.contact-grid{grid-template-columns:1fr;}}
+.contact-info-item{display:flex;gap:16px;padding:18px 0;border-bottom:1px solid var(--border);}
+.contact-info-item .ico{
+  width:42px;height:42px;border-radius:50%;background:var(--cream-dark);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.contact-info-item h4{font-size:.98rem;color:var(--navy);margin-bottom:3px;}
+.contact-info-item p, .contact-info-item a{font-size:.92rem;color:var(--text-soft);}
+.social-row{display:flex;gap:12px;margin-top:22px;}
+.social-row a{
+  width:40px;height:40px;border-radius:50%;border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;transition:all .3s;color:var(--navy);
+}
+.social-row a:hover{background:var(--navy);color:var(--white);border-color:var(--navy);transform:translateY(-3px);}
+
+.form-card{background:var(--white);padding:44px;border-radius:var(--radius);box-shadow:var(--shadow-lg);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+@media(max-width:560px){.form-row{grid-template-columns:1fr;}}
+.field{margin-bottom:20px;}
+.field label{display:block;font-size:.82rem;font-weight:600;color:var(--navy);margin-bottom:7px;}
+.field input, .field select, .field textarea{
+  width:100%;padding:13px 15px;border:1px solid var(--border);border-radius:4px;
+  font-family:'Inter',sans-serif;font-size:.94rem;background:var(--cream);
+  transition:border-color .3s, box-shadow .3s;
+}
+.field input:focus, .field select:focus, .field textarea:focus{
+  outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,162,74,.18);
+}
+.field textarea{resize:vertical;min-height:110px;}
+.form-msg{margin-top:16px;font-size:.9rem;font-weight:600;display:none;}
+.form-msg.ok{display:block;color:#2f7d4f;}
+
+.usp-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+@media(max-width:640px){.usp-grid{grid-template-columns:1fr;}}
+.usp-item{display:flex;gap:12px;align-items:flex-start;font-size:.94rem;}
+.usp-item .chk{color:var(--gold);font-weight:700;}
+
+/* ---------- Footer ---------- */
+footer{background:var(--navy-dark);color:rgba(255,255,255,.7);padding:70px 0 26px;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.3fr;gap:40px;margin-bottom:50px;}
+@media(max-width:900px){.footer-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){.footer-grid{grid-template-columns:1fr;}}
+footer h5{color:var(--white);font-family:'Playfair Display',serif;font-size:1.05rem;margin-bottom:18px;}
+footer .brand-text .name{color:var(--white);}
+footer p{font-size:.9rem;line-height:1.7;}
+footer ul li{margin-bottom:11px;}
+footer ul li a{font-size:.9rem;transition:color .3s;}
+footer ul li a:hover{color:var(--gold-light);}
+.footer-bottom{
+  border-top:1px solid rgba(255,255,255,.1);padding-top:24px;
+  display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;
+  font-size:.8rem;color:rgba(255,255,255,.45);
+}
+.footer-bottom a{color:rgba(255,255,255,.45);transition:color .3s;}
+.footer-bottom a:hover{color:var(--gold-light);}
+
+/* ---------- Admin ---------- */
+.admin-shell{min-height:100vh;background:var(--cream);}
+.login-wrap{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#0b1a33,#142850 60%,#1a3665);padding:20px;
+}
+.login-card{
+  background:var(--white);padding:48px 42px;border-radius:var(--radius);box-shadow:var(--shadow-lg);
+  width:100%;max-width:400px;text-align:center;
+}
+.login-card .brand-mark{margin:0 auto 18px;}
+.login-card h2{margin-bottom:6px;}
+.login-card p{color:var(--text-soft);font-size:.9rem;margin-bottom:28px;}
+.login-error{color:#b3392c;font-size:.85rem;margin-top:10px;display:none;}
+.admin-topbar{
+  background:var(--navy);color:var(--white);padding:20px 0;position:sticky;top:0;z-index:50;
+}
+.admin-topbar .container{display:flex;justify-content:space-between;align-items:center;}
+.admin-main{padding:50px 0 100px;}
+.admin-panel{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:34px;margin-bottom:34px;}
+.admin-panel h3{margin-bottom:22px;font-size:1.25rem;}
+.upload-row{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;}
+.upload-row .field{flex:1;min-width:200px;margin-bottom:0;}
+.admin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:26px;}
+@media(max-width:800px){.admin-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:520px){.admin-grid{grid-template-columns:1fr;}}
+.admin-item{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--cream);}
+.admin-item img{width:100%;aspect-ratio:4/3;object-fit:cover;}
+.admin-item .body{padding:14px;}
+.admin-item input{
+  width:100%;padding:9px 10px;border:1px solid var(--border);border-radius:4px;font-size:.88rem;margin-bottom:10px;
+}
+.admin-item .row-btns{display:flex;gap:8px;}
+.btn-sm{padding:8px 14px;font-size:.8rem;border-radius:3px;}
+.btn-danger{background:#b3392c;color:var(--white);}
+.btn-danger:hover{background:#8f2c22;}
+.note-banner{
+  background:#fbf3df;border:1px solid var(--gold);color:#6b5416;padding:16px 20px;border-radius:4px;
+  font-size:.87rem;margin-bottom:30px;
+}
+
+/* ---------- Misc ---------- */
+.text-center{text-align:center;}
+.mt-40{margin-top:40px;}
+::selection{background:var(--gold);color:var(--navy-dark);}
+
+
+/* ============================================================
+   1. TRANSLUCENT (FROSTED-GLASS) PANELS BEHIND EVERY TEXT BLOCK
+   Light glass on light pages, dark glass over photos / dark bands.
+   ============================================================ */
+:root{
+  --gold-deep:#8a6a1c;
+  --glass-bg:rgba(255,255,255,.80);
+  --glass-bg-strong:rgba(255,255,255,.90);
+  --glass-border:rgba(255,255,255,.8);
+  --glass-shadow:0 8px 32px rgba(11,26,51,.10), inset 0 1px 0 rgba(255,255,255,.65);
+  --glass-blur:blur(14px) saturate(1.5);
+  --glass-dark-bg:rgba(11,26,51,.46);
+  --glass-dark-border:rgba(255,255,255,.2);
+  --glass-dark-shadow:0 10px 40px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.12);
+}
+/* browsers without backdrop-filter get a more opaque panel so text stays readable */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  :root{--glass-bg:rgba(255,255,255,.92);--glass-bg-strong:rgba(255,255,255,.96);--glass-dark-bg:rgba(11,26,51,.85);}
+}
+
+/* light glass */
+.glass,.card,.value-chip,.story-card,.form-card,.usp-grid,.service-copy,.section-head,.industry-chips span{
+  background:var(--glass-bg);
+  -webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);
+  border:1px solid var(--glass-border);
+  box-shadow:var(--glass-shadow);
+}
+.glass,.section-head,.usp-grid,.service-copy{border-radius:14px;}
+.glass,.service-copy{padding:34px 38px;}
+.section-head{padding:34px 40px;}
+.usp-grid{padding:30px 36px;}
+.card,.form-card,.story-card{border-radius:14px;}
+.story-card{border-left:3px solid var(--gold);border-radius:0 14px 14px 0;}
+.form-card{background:var(--glass-bg-strong);}
+.industry-chips span{box-shadow:none;}
+.glance-table{background:var(--glass-bg);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);box-shadow:var(--glass-shadow);}
+.glance-table td:first-child{background:rgba(239,233,220,.5);}
+/* no glass-on-glass: nested items just tint the parent panel */
+.glass .value-chip,.glass .glance-table,.section-head .divider{-webkit-backdrop-filter:none;backdrop-filter:none;}
+.glass .value-chip{background:rgba(255,255,255,.65);}
+.glass .glance-table{background:rgba(255,255,255,.5);box-shadow:none;}
+
+/* dark glass */
+.page-header .inner,.stat,.hero-blank .hero-hint,.project-card .overlay > div,.gallery-item .cap,.footer-grid > div{
+  background:var(--glass-dark-bg);
+  -webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4);
+  border:1px solid var(--glass-dark-border);
+  box-shadow:var(--glass-dark-shadow);
+}
+.page-header .inner{max-width:860px;padding:44px 56px;border-radius:18px;}
+.page-header h1,.page-header p,.page-header .eyebrow{text-shadow:0 1px 14px rgba(0,0,0,.25);}
+.hero-blank .hero-hint{padding:12px 24px;border-radius:40px;color:rgba(255,255,255,.85);}
+.stats-band{background:radial-gradient(700px 320px at 15% 0%,rgba(200,162,74,.22),transparent 70%),radial-gradient(600px 320px at 90% 100%,rgba(34,64,111,.9),transparent 70%),var(--navy);}
+.stat{padding:26px 12px;border-radius:14px;}
+.project-card .overlay > div{width:100%;padding:16px 20px;border-radius:12px;}
+.gallery-item .cap{left:10px;right:10px;bottom:10px;padding:10px 14px;border-radius:10px;background:var(--glass-dark-bg);text-shadow:0 1px 2px rgba(0,0,0,.35);}
+.footer-grid > div{padding:26px 26px;border-radius:14px;background:rgba(255,255,255,.05);box-shadow:none;border-color:rgba(255,255,255,.1);}
+footer{overflow:hidden;}
+footer p,footer ul li{color:rgba(255,255,255,.82);}
+
+/* ambient backdrop the glass has to blur: faint blueprint grid + warm/cool glows */
+.stack-page{
+  background-color:var(--cream);
+  background-image:
+    linear-gradient(rgba(20,40,80,.05) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(20,40,80,.05) 1px,transparent 1px);
+  background-size:44px 44px;
+}
+.stack-page > section{
+  background:
+    radial-gradient(520px 360px at 6% 18%,rgba(200,162,74,.16),transparent 70%),
+    radial-gradient(560px 400px at 96% 78%,rgba(34,64,111,.11),transparent 70%);
+}
+.stack-page > section.tint{background-color:rgba(247,244,238,.72);}
+.stack-page > section.stats-band{background:radial-gradient(700px 320px at 15% 0%,rgba(200,162,74,.22),transparent 70%),radial-gradient(600px 320px at 90% 100%,rgba(34,64,111,.9),transparent 70%),var(--navy);}
+
+/* ============================================================
+   2. PORTFOLIO — SLIDES (come in one by one from the left, travel right)
+   Released one at a time by the JavaScript at the bottom of this file as they scroll into view.
+   ============================================================ */
+.slide-item{position:relative;will-change:transform,opacity;}   /* position is set by the JavaScript at the bottom of this file from scroll */
+.featured-grid{gap:28px;}
+.featured-grid .project-card{aspect-ratio:16/10;}
+.featured-grid .project-card .overlay h4{font-size:1.3rem;}
+
+/* ============================================================
+   3. PAGE PULL-UP — the next page lifts up over the current one
+   Enabled by the JavaScript at the bottom of this file (adds .js-stack). Without JS the pages
+   simply scroll normally.
+   ============================================================ */
+main{position:relative;z-index:1;}
+.stack-page{
+  position:relative;z-index:2;
+  overflow:hidden;overflow:clip;      /* 'clip' (not 'hidden') so the sticky background below can stick; old browsers fall back to hidden */
+  border-radius:32px 32px 0 0;
+  box-shadow:0 -30px 80px rgba(5,13,28,.5);
+  transform-origin:50% 100%;
+  transform:scale(calc(1 - var(--cover,0) * .06));
+}
+.js-stack .stack-page.stick{position:-webkit-sticky;position:sticky;}
+.js-stack .hero-blank{position:-webkit-sticky;position:sticky;top:0;z-index:0;transform-origin:50% 40%;transform:scale(calc(1 - var(--cover,0) * .06));}
+.hero-blank.covered{visibility:hidden;}
+/* dim whatever is being covered */
+.stack-page::after,.hero-blank::after{
+  content:'';position:absolute;top:0;right:0;bottom:0;left:0;background:#050d1c;
+  opacity:calc(var(--cover,0) * .62);pointer-events:none;z-index:60;
+}
+@media(max-width:900px){
+  .stack-page{border-radius:22px 22px 0 0;}
+  .glass,.service-copy{padding:26px 24px;}
+  .section-head{padding:26px 22px;}
+  .page-header .inner{padding:32px 24px;}
+  .footer-grid > div{padding:20px;}
+}
+
+/* ---------- Focus + reduced motion ---------- */
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto;}
+  .reveal,.reveal-scale,.slide-left,.slide-right{opacity:1;transform:none !important;transition:none;}
+  .stack-page,.hero-blank{transform:none !important;}
+  .stack-page::after,.hero-blank::after{display:none;}
+}
+
+/* ---------- Admin pages: same glass language ---------- */
+.admin-shell{background:radial-gradient(520px 360px at 6% 10%,rgba(200,162,74,.16),transparent 70%),radial-gradient(560px 400px at 96% 60%,rgba(34,64,111,.11),transparent 70%),var(--cream);}
+.login-card{background:rgba(255,255,255,.82);-webkit-backdrop-filter:blur(16px) saturate(1.5);backdrop-filter:blur(16px) saturate(1.5);border:1px solid rgba(255,255,255,.7);border-radius:16px;}
+.admin-panel{background:var(--glass-bg-strong);-webkit-backdrop-filter:var(--glass-blur);backdrop-filter:var(--glass-blur);border:1px solid var(--glass-border);border-radius:14px;}
+.admin-item{background:rgba(255,255,255,.55);}
+
+
+/* ============================================================
+   HERO VIDEO (page 1) — 100% opacity, scrubbed by scroll
+   ============================================================ */
+.hero-blank video{background:var(--navy-dark);pointer-events:none;}
+.hero-runway{height:0;}                       /* the JavaScript sets the real height */
+.scroll-cue{
+  padding:12px 22px 10px;border-radius:40px;
+  background:rgba(11,26,51,.66);
+  -webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4);
+  border:1px solid var(--glass-dark-border);
+  color:rgba(255,255,255,.9);
+  transition:opacity .5s ease;
+}
+.hero-blank.started .scroll-cue{opacity:0;}
+
+/* Portfolio stays pinned this long (after its last row) before Contact
+   rises over it, so every slide has time to arrive. Change to taste. */
+.page-dwell{height:var(--portfolio-dwell,70vh);}
+
+
+/* ============================================================
+   PAGES 2-5 — FULL-PAGE IMAGE BACKGROUNDS + OPENERS
+   Each page carries its own image as a background that stays in
+   place while the page scrolls over it (a sticky, screen-sized
+   layer). Pages 2-4 also animate it (drift + drop, see the
+   "PAGE EFFECTS" script). The title sits on a translucent panel.
+   ============================================================ */
+.page-bg{
+  position:-webkit-sticky;position:sticky;top:0;
+  height:100vh;margin-bottom:-100vh;         /* takes no space: the page content starts at the very top */
+  overflow:hidden;z-index:0;pointer-events:none;
+  background:#eef1f5;
+}
+.page-bg-img{                                 /* taller than the screen so it has room to drift */
+  position:absolute;left:0;right:0;top:-10vh;height:120vh;
+  background-size:cover;background-position:center;background-repeat:no-repeat;
+  transform-origin:50% 50%;will-change:transform;
+}
+.page-bg::after{                              /* veil: keeps text crisp, image still clearly visible behind it */
+  content:'';position:absolute;top:0;right:0;bottom:0;left:0;
+  background:rgba(247,244,238,.62);
+}
+.bg-about{background-image:url(assets/page-about.jpg);}
+.bg-services{background-image:url(assets/page-services.jpg);}
+.bg-portfolio{background-image:url(assets/page-portfolio.jpg);}
+.bg-contact{background-image:url(assets/page-contact.jpg);}
+
+.page-header.photo{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:calc(var(--nav-h) + 36px) 0 100px;
+  color:var(--navy);
+  background:transparent;
+}
+.page-header.photo .inner{
+  width:calc(100% - 48px);max-width:820px;padding:44px 56px;border-radius:18px;
+  background:rgba(255,255,255,.58);
+  -webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.85);
+  box-shadow:0 12px 44px rgba(11,26,51,.14),inset 0 1px 0 rgba(255,255,255,.7);
+}
+.page-header.photo .eyebrow{color:var(--gold-deep);text-shadow:none;}
+.page-header.photo h1{color:var(--navy);text-shadow:none;}
+.page-header.photo p{color:#3b4658;text-shadow:none;}
+@media(max-width:900px){
+  .page-header.photo .inner{padding:32px 24px;}
+  .page-bg-img.bg-about{background-position:88% 45%;}      /* crane */
+  .page-bg-img.bg-services{background-position:8% 50%;}    /* concrete wall + tree */
+  .page-bg-img.bg-portfolio{background-position:78% 50%;}  /* building + sunset */
+  .page-bg-img.bg-contact{background-position:16% 50%;}    /* glass building */
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .page-header.photo .inner{background:rgba(255,255,255,.92);}
+}
+
+/* ============================================================
+   IMAGE + ENTRANCE ANIMATIONS (pages 2-4)
+   Positions are driven by scroll in the "PAGE EFFECTS" script.
+   ============================================================ */
+/* pictures live in frames; the picture inside drifts top-to-bottom and settles from a zoom */
+.fx-frame{position:relative;overflow:hidden;}
+.card.fx-frame.about-photo{aspect-ratio:5/4;}
+.fx-frame img.fx-img{
+  position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;
+  transform:translate3d(0,var(--py,0%),0) scale(var(--sz,1.2)) !important;
+  transform-origin:50% 50%;transition:none !important;will-change:transform;
+}
+.fx-frame .num{z-index:3;}
+/* the service number badge pops once its picture has been revealed */
+.js-fx .service-media .num{transform:scale(.2);opacity:0;transition:transform .7s var(--ease),opacity .4s ease;}
+.js-fx .service-media.is-in .num{transform:scale(1);opacity:1;transition-delay:.15s;}
+/* extra ways for the existing scroll-reveal to arrive */
+.reveal.reveal-down:not(.in){transform:translateY(-52px);}
+.reveal.reveal-left:not(.in){transform:translateX(-70px);}
+.reveal.reveal-right:not(.in){transform:translateX(70px);}
+.reveal.reveal-zoom:not(.in){transform:scale(.84);}
+@supports not (aspect-ratio:1/1){ .card.fx-frame.about-photo{height:420px;} }
+
+/* ============================================================
+   CROSS-PLATFORM SAFETY NETS (iOS / Android / Mac / Windows)
+   ============================================================ */
+/* iOS Safari zooms the page when a field under 16px gets focus */
+@media(max-width:900px){
+  .field input,.field select,.field textarea,.name-input{font-size:16px;}
+}
+/* iOS priming step: video hidden behind its poster while it runs (see js) */
+.hero-blank video.priming{opacity:0;}
+/* very old browsers without aspect-ratio */
+@supports not (aspect-ratio:1/1){
+  .project-card{height:320px;}
+  .featured-grid .project-card{height:380px;}
+  .gallery-item{height:260px;}
+  .service-media{height:340px;}
+}
+
+/* ============================================================
+   ADMIN PANEL (opens on top of the site at  index.html#admin)
+   ============================================================ */
+#adminApp{
+  display:none;position:fixed;top:0;right:0;bottom:0;left:0;z-index:5000;
+  overflow:auto;-webkit-overflow-scrolling:touch;background:var(--cream);
+}
+#adminApp.open{display:block;}
+html.admin-open{overflow:hidden;}
+
+/* ============================================================
+   LARGE / EXTERNAL MONITORS (27" and up, ~1600px+ wide)
+   The hero already fills the full screen edge-to-edge. This
+   block makes the rest of the content scale up to match, instead
+   of staying MacBook-sized with big empty margins on a big screen.
+   ============================================================ */
+@media(min-width:1600px){
+  .container{max-width:1500px;}
+  .nav-inner{max-width:1500px;}
+  .section-head{max-width:820px;}
+  .section-head h2{font-size:2.8rem;}
+  .section-head p{font-size:1.15rem;}
+  section{padding:130px 0;}
+  .section-tight{padding:80px 0;}
+  .grid-2{gap:52px;}
+  .grid-3{gap:40px;}
+  .grid-4{gap:34px;}
+  .card{padding:46px 36px;}
+  .card h3{font-size:1.35rem;}
+  .card p{font-size:1.02rem;}
+  .stat h3{font-size:3.1rem;}
+  .service-copy h3{font-size:2rem;}
+  .service-copy p,.service-copy ul li{font-size:1.02rem;}
+  .project-card .overlay h4{font-size:1.35rem;}
+  .project-card .overlay p{font-size:.95rem;}
+  .page-header{padding:220px 0 110px;}
+  .page-header h1{font-size:clamp(3.2rem,4vw,4.6rem);}
+  .page-header p{max-width:720px;font-size:1.1rem;}
+  .login-card{max-width:460px;}
+}
+@media(min-width:1920px){
+  .container{max-width:1680px;}
+  .nav-inner{max-width:1680px;}
+  .section-head{max-width:900px;}
+}
+</style>
+</head>
+<body style="padding-top:0;">
+
+<!-- ============ NAVBAR ============ -->
+<nav class="navbar on-dark" id="siteNav">
+  <div class="nav-inner">
+    <a href="#top" class="brand">
+      <svg class="brand-mark" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="44" height="44" rx="4" fill="none" stroke="#c8a24a" stroke-width="2"/>
+        <path d="M12 34 L12 20 L24 12 L36 20 L36 34" fill="none" stroke="#c8a24a" stroke-width="2.4" stroke-linejoin="round"/>
+        <line x1="12" y1="27" x2="36" y2="27" stroke="#c8a24a" stroke-width="2"/>
+        <text x="24" y="42.5" text-anchor="middle" font-family="Playfair Display, serif" font-size="9" fill="#c8a24a" font-weight="700">GS</text>
+      </svg>
+      <span class="brand-text">
+        <span class="name">G.S. Construction</span>
+        <span class="tag">Build Stronger Than Ever</span>
+      </span>
+    </a>
+    <div class="nav-links" id="navLinks">
+      <a href="#top">Home</a>
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#portfolio">Portfolio</a>
+      <a href="#contact">Contact</a>
+      <a href="#contact" class="btn btn-gold nav-cta">Get a Quote</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+
+<!-- ============ HERO — SCROLL-CONTROLLED VIDEO (page 1 only) ============
+     The video is scrubbed by scrolling: scroll down = it plays forward,
+     scroll up = it rewinds. It is re-encoded with every frame as a keyframe
+     (assets/hero-*.mp4) so it can jump to any frame instantly, which is
+     what keeps it smooth. See the "HERO VIDEO" block in the JavaScript at the bottom of this file. -->
+<section class="hero-blank" id="top">
+  <!-- The right file is chosen by the JavaScript at the bottom of this file: "landscape" for wide screens,
+       "portrait" for phones held upright (.mp4, or .webm if the browser has no H.264). -->
+  <video id="heroVideo" muted playsinline webkit-playsinline preload="auto" aria-hidden="true" tabindex="-1"
+         disablepictureinpicture disableremoteplayback x-webkit-airplay="deny"
+         poster="assets/hero-landscape-poster.jpg" data-fps="30"
+         data-landscape="assets/hero-landscape" data-portrait="assets/hero-portrait"></video>
+  <div class="scroll-cue"><span>Scroll to play</span><span class="line"></span></div>
+</section>
+<!-- extra scroll distance that "plays" the video (height is set by the JavaScript at the bottom of this file) -->
+<div class="hero-runway" id="heroRunway" aria-hidden="true"></div>
+
+<main>
+
+<!-- ============================================================
+     ABOUT
+     ============================================================ -->
+<div id="about" class="stack-page" data-drift>
+  <!-- full-page background: stays put while this page scrolls over it -->
+  <div class="page-bg" aria-hidden="true"><div class="page-bg-img bg-about"></div></div>
+
+
+  <header class="page-header photo">
+    <div class="container inner">
+      <span class="eyebrow">Established 2014</span>
+      <h1>About G.S. Construction</h1>
+      <p>A decade of building trust, quality, and landmark projects across Maharashtra and beyond.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <div class="grid-2" style="align-items:center;">
+        <div class="reveal glass">
+          <span class="eyebrow">Who We Are</span>
+          <h2 style="font-size:2.1rem;margin-bottom:18px;">A trusted name in construction & infrastructure</h2>
+          <p style="color:var(--text-soft);margin-bottom:16px;">G.S. Construction is a trusted construction and infrastructure development company established in 2014. We specialize in delivering high-quality residential, commercial, industrial, and civil construction projects with a commitment to excellence, safety, innovation, and customer satisfaction.</p>
+          <p style="color:var(--text-soft);">Over the years, we have built a strong reputation for delivering projects on time, within budget, and according to the highest industry standards. Our experienced team combines technical expertise with modern construction practices to provide reliable and cost-effective solutions for clients across various sectors.</p>
+        </div>
+        <div class="card fx-frame fx-curtain about-photo" style="padding:0;overflow:hidden;">
+          <img class="fx-img" src="assets/gallery-about-site.jpg" alt="G.S. Construction site">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight tint">
+    <div class="container grid-2">
+      <div class="card reveal reveal-left">
+        <div class="icon">◆</div>
+        <h3>Our Mission</h3>
+        <p>To deliver superior construction solutions through quality workmanship, advanced technology, and professional project management while exceeding client expectations.</p>
+      </div>
+      <div class="card reveal reveal-right">
+        <div class="icon">◆</div>
+        <h3>Our Vision</h3>
+        <p>To become one of the most respected and preferred construction companies by creating sustainable, innovative, and landmark projects that contribute to community development.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head reveal reveal-down">
+        <span class="eyebrow">What Drives Us</span>
+        <h2>Core Values</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="grid-4">
+        <div class="value-chip reveal reveal-zoom"><span class="dot"></span>Integrity</div>
+        <div class="value-chip reveal reveal-zoom"><span class="dot"></span>Quality Excellence</div>
+        <div class="value-chip reveal reveal-zoom"><span class="dot"></span>Safety First</div>
+        <div class="value-chip reveal reveal-zoom"><span class="dot"></span>Innovation</div>
+        <div class="value-chip reveal reveal-zoom"><span class="dot"></span>Customer Satisfaction</div>
+        <div class="value-chip reveal reveal-zoom"><span class="dot"></span>Accountability</div>
+        <div class="value-chip reveal reveal-zoom"><span class="dot"></span>Teamwork</div>
+        <div class="value-chip reveal reveal-zoom"><span class="dot"></span>Sustainability</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stats-band">
+    <div class="container stats-grid">
+      <div class="stat reveal reveal-down"><h3><span data-counter="10" data-suffix="+">0</span></h3><p>Years Experience</p></div>
+      <div class="stat reveal reveal-down"><h3><span data-counter="50" data-suffix="+">0</span></h3><p>Projects Delivered</p></div>
+      <div class="stat reveal reveal-down"><h3><span data-counter="30" data-suffix="+">0</span></h3><p>Team Members</p></div>
+      <div class="stat reveal reveal-down"><h3><span data-counter="100" data-suffix="+">0</span></h3><p>Satisfied Clients</p></div>
+      <div class="stat reveal reveal-down"><h3><span data-counter="95" data-suffix="%">0</span></h3><p>Client Retention</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container grid-2">
+      <div class="reveal reveal-left glass">
+        <span class="eyebrow">Company Achievements</span>
+        <h2 style="font-size:2rem;margin-bottom:24px;">Milestones</h2>
+        <ul class="timeline">
+          <li><strong>Since 2014</strong><br>Successfully operating and growing year on year.</li>
+          <li><strong>Multiple Projects</strong><br>Completed a wide range of residential and commercial projects.</li>
+          <li><strong>Long-Term Relationships</strong><br>Built lasting partnerships with clients and contractors.</li>
+          <li><strong>Expanded Portfolio</strong><br>Grown service capabilities across multiple construction sectors.</li>
+          <li><strong>Consistent Delivery</strong><br>Maintained strong project delivery standards throughout.</li>
+        </ul>
+      </div>
+      <div class="reveal reveal-right glass">
+        <span class="eyebrow">Recognition</span>
+        <h2 style="font-size:2rem;margin-bottom:24px;">Certifications & Memberships</h2>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+          <div class="value-chip"><span class="dot"></span>ISO 9001 : Quality Management <em style="color:var(--text-soft);margin-left:6px;">(as applicable)</em></div>
+          <div class="value-chip"><span class="dot"></span>Contractor Registration <em style="color:var(--text-soft);margin-left:6px;">(as applicable)</em></div>
+          <div class="value-chip"><span class="dot"></span>Govt. Approved Vendor Registration <em style="color:var(--text-soft);margin-left:6px;">(as applicable)</em></div>
+          <div class="value-chip"><span class="dot"></span>Builders Association Member <em style="color:var(--text-soft);margin-left:6px;">(as applicable)</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight tint">
+    <div class="container grid-2">
+      <div class="reveal reveal-left glass">
+        <span class="eyebrow">Company at a Glance</span>
+        <table class="glance-table mt-40">
+          <tr><td>Established</td><td>2014</td></tr>
+          <tr><td>Industry</td><td>Construction & Infrastructure</td></tr>
+          <tr><td>Services</td><td>Residential, Commercial, Industrial & Civil Construction</td></tr>
+          <tr><td>Experience</td><td>10+ Years</td></tr>
+          <tr><td>Business Type</td><td>Construction Contractor</td></tr>
+          <tr><td>Project Approach</td><td>Quality, Safety & Timely Delivery</td></tr>
+          <tr><td>Coverage Area</td><td>Maharashtra & Across India</td></tr>
+        </table>
+      </div>
+      <div class="reveal reveal-right glass">
+        <span class="eyebrow">Business Model</span>
+        <h3 style="margin:14px 0 10px;font-size:1.3rem;">One roof, end to end</h3>
+        <p style="color:var(--text-soft);margin-bottom:24px;">G.S. Construction operates through a client-focused model that combines planning, engineering, procurement, construction, quality assurance, and project management under one roof. We provide customized solutions based on project requirements and ensure efficient execution from concept to completion.</p>
+        <span class="eyebrow">Company Journey</span>
+        <p style="color:var(--text-soft);margin-top:10px;">Since our establishment in 2014, G.S. Construction has continuously evolved by adopting modern construction technologies, strengthening our workforce, and expanding our service capabilities. Our journey reflects dedication, reliability, and a passion for building structures that stand the test of time.</p>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#about -->
+
+<!-- ============================================================
+     SERVICES
+     ============================================================ -->
+<div id="services" class="stack-page" data-drift>
+  <!-- full-page background: stays put while this page scrolls over it -->
+  <div class="page-bg" aria-hidden="true"><div class="page-bg-img bg-services"></div></div>
+
+
+  <header class="page-header photo">
+    <div class="container inner">
+      <span class="eyebrow">Services & Solutions</span>
+      <h1>What We Build</h1>
+      <p>Five specializations, one standard of quality. Scroll to explore each one.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+
+      <div class="service-slide">
+        <div class="service-media fx-frame fx-curtain"><span class="num">1</span><img class="fx-img" src="assets/gallery-residential-construction.jpg" alt="Residential construction"></div>
+        <div class="service-copy slide-left">
+          <h3>Residential Construction</h3>
+          <p>Complete construction solutions for villas, apartments, independent houses, and residential complexes — from planning to execution.</p>
+          <ul>
+            <li>New Home Construction</li>
+            <li>Renovation & Remodeling</li>
+            <li>Structural Development</li>
+            <li>Interior Finishing</li>
+            <li>Turnkey Projects</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="service-slide reverse">
+        <div class="service-media fx-frame fx-curtain"><span class="num">2</span><img class="fx-img" src="assets/gallery-commercial-construction.jpg" alt="Commercial construction"></div>
+        <div class="service-copy slide-left">
+          <h3>Commercial Construction</h3>
+          <p>Construction of offices, retail spaces, shopping complexes, and business facilities built for performance and presence.</p>
+          <ul>
+            <li>Office Buildings</li>
+            <li>Commercial Complexes</li>
+            <li>Retail Outlets</li>
+            <li>Warehouses</li>
+            <li>Corporate Infrastructure</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="service-slide">
+        <div class="service-media fx-frame fx-curtain"><span class="num">3</span><img class="fx-img" src="assets/gallery-industrial-construction.jpg" alt="Industrial construction"></div>
+        <div class="service-copy slide-left">
+          <h3>Industrial Construction</h3>
+          <p>Development of industrial facilities designed for productivity and operational efficiency.</p>
+          <ul>
+            <li>Factory Buildings</li>
+            <li>Industrial Sheds</li>
+            <li>Manufacturing Facilities</li>
+            <li>Storage Units</li>
+            <li>Industrial Infrastructure</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="service-slide reverse">
+        <div class="service-media fx-frame fx-curtain"><span class="num">4</span><img class="fx-img" src="assets/gallery-civil-infra.jpg" alt="Civil and infrastructure works"></div>
+        <div class="service-copy slide-left">
+          <h3>Civil & Infrastructure Works</h3>
+          <p>Large-scale civil engineering and infrastructure development projects, built to last.</p>
+          <ul>
+            <li>Roads & Pavements</li>
+            <li>Drainage Systems</li>
+            <li>Site Development</li>
+            <li>Earthwork</li>
+            <li>Utility Infrastructure</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="service-slide">
+        <div class="service-media fx-frame fx-curtain"><span class="num">5</span><img class="fx-img" src="assets/gallery-renovation.jpg" alt="Renovation and maintenance"></div>
+        <div class="service-copy slide-left">
+          <h3>Renovation & Maintenance</h3>
+          <p>Upgrading existing structures to enhance functionality, safety, and appearance.</p>
+          <ul>
+            <li>Building Renovation</li>
+            <li>Structural Repairs</li>
+            <li>Waterproofing</li>
+            <li>Painting Works</li>
+            <li>Facility Maintenance</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section-tight tint">
+    <div class="container">
+      <div class="section-head reveal reveal-down">
+        <span class="eyebrow">Where We Work</span>
+        <h2>Industries Served</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="industry-chips reveal reveal-zoom">
+        <span>Residential Real Estate</span>
+        <span>Commercial Real Estate</span>
+        <span>Industrial Manufacturing</span>
+        <span>Government Projects</span>
+        <span>Educational Institutions</span>
+        <span>Healthcare Facilities</span>
+        <span>Hospitality Sector</span>
+        <span>Infrastructure Development</span>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#services -->
+
+<!-- ============================================================
+     PORTFOLIO
+     ============================================================ -->
+<div id="portfolio" class="stack-page" data-drift>
+  <!-- full-page background: stays put while this page scrolls over it -->
+  <div class="page-bg" aria-hidden="true"><div class="page-bg-img bg-portfolio"></div></div>
+
+
+  <header class="page-header photo">
+    <div class="container inner">
+      <span class="eyebrow">Our Work</span>
+      <h1>Portfolio</h1>
+      <p>A look at the projects and job sites that reflect our standard of quality.</p>
+    </div>
+  </header>
+
+  <section>
+    <div class="container">
+      <div class="section-head reveal reveal-down">
+        <span class="eyebrow">Key Projects</span>
+        <h2>Featured Work</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="grid-2 featured-grid">
+        <div class="project-card slide-item">
+          <img src="assets/gallery-residential-township.jpg" alt="Residential Township Development">
+          <div class="overlay"><div><h4>Residential Township</h4><p>Premium units with modern amenities</p></div></div>
+        </div>
+        <div class="project-card slide-item">
+          <img src="assets/gallery-commercial-office-complex.jpg" alt="Commercial Office Complex">
+          <div class="overlay"><div><h4>Commercial Office Complex</h4><p>Multi-storey, contemporary architecture</p></div></div>
+        </div>
+        <div class="project-card slide-item">
+          <img src="assets/gallery-industrial-shed.jpg" alt="Industrial Shed Project">
+          <div class="overlay"><div><h4>Industrial Shed Project</h4><p>Structural steel framework</p></div></div>
+        </div>
+        <div class="project-card slide-item">
+          <img src="assets/gallery-infrastructure-development.jpg" alt="Infrastructure Development Work">
+          <div class="overlay"><div><h4>Infrastructure Development</h4><p>Roads, drainage & site works</p></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-tight tint">
+    <div class="container">
+      <div class="section-head reveal reveal-down">
+        <span class="eyebrow">Testimonials in Substance</span>
+        <h2>Client Success Stories</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="grid-3">
+        <div class="story-card slide-item"><h4>Project Delivery Excellence</h4><p>Successfully delivered projects within committed timelines while maintaining quality standards and budget control.</p></div>
+        <div class="story-card slide-item"><h4>Quality Construction Standards</h4><p>Achieved high client satisfaction through durable construction practices and attention to detail.</p></div>
+        <div class="story-card slide-item"><h4>Long-Term Partnerships</h4><p>Developed strong relationships with clients resulting in repeat business and referrals.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="section-head reveal reveal-down">
+        <span class="eyebrow">From the Job Site</span>
+        <h2>Construction Site Gallery</h2>
+        <p>Images below are managed by our team and updated as new sites progress.</p>
+        <div class="divider"></div>
+      </div>
+      <div class="gallery-grid" id="galleryGrid">
+        <!-- filled in by the gallery code in the JavaScript at the bottom of this file -->
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#portfolio -->
+
+<!-- extra scroll time: the Portfolio page stays put a little longer so all slides can arrive -->
+<div class="page-dwell" aria-hidden="true"></div>
+
+<!-- ============================================================
+     CONTACT
+     ============================================================ -->
+<div id="contact" class="stack-page">
+  <!-- full-page background: stays put while this page scrolls over it -->
+  <div class="page-bg" aria-hidden="true"><div class="page-bg-img bg-contact"></div></div>
+
+
+  <header class="page-header photo">
+    <div class="container inner">
+      <span class="eyebrow">Let's Talk</span>
+      <h1>Contact Us</h1>
+      <p>Tell us about your project — our team will get back to you shortly.</p>
+    </div>
+  </header>
+
+  <section class="section-tight">
+    <div class="container">
+      <div class="section-head reveal">
+        <span class="eyebrow">Why Choose G.S. Construction</span>
+        <h2>Built on a Decade of Trust</h2>
+        <div class="divider"></div>
+      </div>
+      <div class="usp-grid reveal" style="max-width:900px;margin:0 auto;">
+        <div class="usp-item"><span class="chk">✓</span>10+ Years of Industry Experience</div>
+        <div class="usp-item"><span class="chk">✓</span>Quality-Assured Construction</div>
+        <div class="usp-item"><span class="chk">✓</span>Skilled Engineering Team</div>
+        <div class="usp-item"><span class="chk">✓</span>Timely Project Completion</div>
+        <div class="usp-item"><span class="chk">✓</span>Cost-Effective Solutions</div>
+        <div class="usp-item"><span class="chk">✓</span>Safety Compliance Standards</div>
+        <div class="usp-item"><span class="chk">✓</span>Modern Construction Techniques</div>
+        <div class="usp-item"><span class="chk">✓</span>Transparent Communication</div>
+        <div class="usp-item"><span class="chk">✓</span>Customer-Centric Approach</div>
+        <div class="usp-item"><span class="chk">✓</span>End-to-End Project Management</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container">
+      <div class="contact-grid">
+        <div class="reveal glass">
+          <span class="eyebrow">Get in Touch</span>
+          <h2 style="font-size:1.9rem;margin-bottom:24px;">G.S. Construction</h2>
+
+          <div class="contact-info-item">
+            <div class="ico">📍</div>
+            <div><h4>Address</h4><p>Add your office address here</p></div>
+          </div>
+          <div class="contact-info-item">
+            <div class="ico">📞</div>
+            <div><h4>Phone</h4><a href="tel:+91XXXXXXXXXX">+91 XXXXXXXXXX</a></div>
+          </div>
+          <div class="contact-info-item">
+            <div class="ico">✉️</div>
+            <div><h4>Email</h4><a href="mailto:info@gsconstruction.com">info@gsconstruction.com</a></div>
+          </div>
+          <div class="contact-info-item">
+            <div class="ico">🌐</div>
+            <div><h4>Website</h4><p>www.gsconstruction.com</p></div>
+          </div>
+
+          <div class="social-row">
+            <a href="#" aria-label="Facebook">f</a>
+            <a href="#" aria-label="Instagram">ig</a>
+            <a href="#" aria-label="LinkedIn">in</a>
+            <a href="#" aria-label="YouTube">yt</a>
+          </div>
+        </div>
+
+        <div class="reveal">
+          <div class="form-card">
+            <h3 style="margin-bottom:22px;">Request a Quote</h3>
+            <form id="contactForm">
+              <div class="form-row">
+                <div class="field"><label>Full Name</label><input type="text" required></div>
+                <div class="field"><label>Phone Number</label><input type="tel" required></div>
+              </div>
+              <div class="field"><label>Email Address</label><input type="email" required></div>
+              <div class="field">
+                <label>Project Type</label>
+                <select required>
+                  <option value="">Select project type</option>
+                  <option>Residential Construction</option>
+                  <option>Commercial Construction</option>
+                  <option>Industrial Construction</option>
+                  <option>Civil & Infrastructure Works</option>
+                  <option>Renovation & Maintenance</option>
+                </select>
+              </div>
+              <div class="field"><label>Project Description</label><textarea required placeholder="Tell us a bit about your project..."></textarea></div>
+              <button type="submit" class="btn btn-navy" style="width:100%;justify-content:center;">Send Enquiry</button>
+              <p class="form-msg" id="formMsg">Thank you — your enquiry has been received. Our team will contact you shortly.</p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#contact -->
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="brand" style="margin-bottom:16px;">
+          <svg class="brand-mark" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="44" height="44" rx="4" fill="none" stroke="#c8a24a" stroke-width="2"/>
+            <path d="M12 34 L12 20 L24 12 L36 20 L36 34" fill="none" stroke="#c8a24a" stroke-width="2.4" stroke-linejoin="round"/>
+            <line x1="12" y1="27" x2="36" y2="27" stroke="#c8a24a" stroke-width="2"/>
+            <text x="24" y="42.5" text-anchor="middle" font-family="Playfair Display, serif" font-size="9" fill="#c8a24a" font-weight="700">GS</text>
+          </svg>
+          <span class="brand-text"><span class="name">G.S. Construction</span></span>
+        </div>
+        <p>Building trust. Delivering quality. Creating the future. Est. 2014.</p>
+      </div>
+      <div><h5>Explore</h5><ul>
+        <li><a href="#about">About Us</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#portfolio">Portfolio</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul></div>
+      <div><h5>Services</h5><ul>
+        <li><a href="#services">Residential</a></li>
+        <li><a href="#services">Commercial</a></li>
+        <li><a href="#services">Industrial</a></li>
+        <li><a href="#services">Civil Works</a></li>
+      </ul></div>
+      <div><h5>Contact</h5><ul>
+        <li>info@gsconstruction.com</li>
+        <li>+91 XXXXXXXXXX</li>
+        <li>Maharashtra, India</li>
+      </ul></div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 G.S. Construction. All rights reserved.</span>
+      <a href="#admin">Site Admin</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ ADMIN PANEL — opens on top of the site at  index.html#admin ============ -->
+<div id="adminApp">
+<div class="admin-shell" id="adminShell">
+
+  <!-- LOGIN VIEW -->
+  <div class="login-wrap" id="loginView">
+    <div class="login-card">
+      <svg class="brand-mark" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="52" height="52">
+        <rect x="2" y="2" width="44" height="44" rx="4" fill="none" stroke="#c8a24a" stroke-width="2"/>
+        <path d="M12 34 L12 20 L24 12 L36 20 L36 34" fill="none" stroke="#c8a24a" stroke-width="2.4" stroke-linejoin="round"/>
+        <line x1="12" y1="27" x2="36" y2="27" stroke="#c8a24a" stroke-width="2"/>
+        <text x="24" y="42.5" text-anchor="middle" font-family="Playfair Display, serif" font-size="9" fill="#c8a24a" font-weight="700">GS</text>
+      </svg>
+      <h2>Admin Login</h2>
+      <p>Manage the construction site image gallery.</p>
+      <form id="adminLoginForm">
+        <div class="field" style="text-align:left;">
+          <label>Username</label>
+          <input type="text" id="adminUser" required autocomplete="username">
+        </div>
+        <div class="field" style="text-align:left;">
+          <label>Password</label>
+          <input type="password" id="adminPass" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-navy" style="width:100%;justify-content:center;">Log In</button>
+        <p class="login-error" id="loginError">Incorrect username or password.</p>
+      </form>
+      <p style="margin-top:24px;"><a href="#" onclick="gsCloseAdmin();return false;" style="color:var(--gold);font-size:.85rem;">← Back to website</a></p>
+    </div>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="dashboardView" style="display:none;">
+    <div class="admin-topbar">
+      <div class="container">
+        <div class="brand">
+          <svg class="brand-mark" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" width="38" height="38">
+            <rect x="2" y="2" width="44" height="44" rx="4" fill="none" stroke="#c8a24a" stroke-width="2"/>
+            <path d="M12 34 L12 20 L24 12 L36 20 L36 34" fill="none" stroke="#c8a24a" stroke-width="2.4" stroke-linejoin="round"/>
+            <line x1="12" y1="27" x2="36" y2="27" stroke="#c8a24a" stroke-width="2"/>
+            <text x="24" y="42.5" text-anchor="middle" font-family="Playfair Display, serif" font-size="9" fill="#c8a24a" font-weight="700">GS</text>
+          </svg>
+          <span class="brand-text"><span class="name" style="color:#fff;">Admin Dashboard</span></span>
+        </div>
+        <div style="display:flex;gap:14px;align-items:center;">
+          <button type="button" class="btn btn-outline btn-sm" onclick="gsCloseAdmin()">View Site</button>
+          <button class="btn btn-gold btn-sm" onclick="gsAdminLogout()">Log Out</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container admin-main">
+      <div class="note-banner">
+        <strong>Heads up:</strong> images you add here are saved in this browser's storage only.
+        They'll show up for you on this device, but since the site has no backend/database yet,
+        other visitors won't see new uploads until the gallery is connected to a real server.
+        Ask me any time to wire this up to a proper backend for site-wide persistence.
+      </div>
+
+      <div class="admin-panel">
+        <h3>Add a New Image</h3>
+        <form id="addImageForm" class="upload-row">
+          <div class="field">
+            <label>Image File</label>
+            <input type="file" id="newImageFile" accept="image/*" required>
+          </div>
+          <div class="field">
+            <label>Image Name / Caption</label>
+            <input type="text" id="newImageName" placeholder="e.g. Site Foundation Work — Phase 2" required>
+          </div>
+          <button type="submit" class="btn btn-navy">Add to Gallery</button>
+        </form>
+      </div>
+
+      <div class="admin-panel">
+        <h3>Manage Gallery Images</h3>
+        <p style="color:var(--text-soft);font-size:.9rem;margin-top:-12px;margin-bottom:6px;">Edit a name and click "Save name", or delete an image entirely.</p>
+        <div class="admin-grid" id="adminGrid"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+/* ============================================================
+   G.S. CONSTRUCTION — shared site behaviour
+   ============================================================ */
+
+/* ---------- Mobile nav toggle ---------- */
+(function(){
+  const toggle = document.querySelector('.nav-toggle');
+  const links = document.querySelector('.nav-links');
+  if(!toggle || !links) return;
+  toggle.addEventListener('click', ()=>{
+    toggle.classList.toggle('open');
+    links.classList.toggle('open');
+  });
+  links.querySelectorAll('a').forEach(a=>{
+    a.addEventListener('click', ()=>{
+      toggle.classList.remove('open');
+      links.classList.remove('open');
+    });
+  });
+})();
+
+/* ---------- Shared helpers ---------- */
+const GS_REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const gsClamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+
+/* ---------- Navbar: shadow + light/dark swap.
+   Looks at whatever is actually under the bar (hero or a page header)
+   so it stays readable now that pages slide over each other. ---------- */
+(function(){
+  const nav = document.querySelector('.navbar');
+  if(!nav) return;
+  let ticking = false;
+  const run = ()=>{
+    ticking = false;
+    nav.classList.toggle('scrolled', window.scrollY > 30);
+    const stack = document.elementsFromPoint ? document.elementsFromPoint(window.innerWidth / 2, nav.offsetHeight / 2) : [];
+    const under = stack.find(el => !nav.contains(el));
+    const dark = !!(under && under.closest('.hero-blank, .stats-band, .page-header:not(.photo)'));   // photo openers are light -> light nav
+    nav.classList.toggle('on-dark', dark);
+  };
+  const onScroll = ()=>{ if(!ticking){ ticking = true; requestAnimationFrame(run); } };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  window.gsNavRefresh = run;   // page pull-up calls this when the hero is revealed/hidden
+  run();
+})();
+
+/* ---------- Highlight active nav link while scrolling.
+   Scroll-based (not IntersectionObserver) because pinned pages stay
+   "visible" underneath the page that covers them. ---------- */
+(function(){
+  const pages = Array.from(document.querySelectorAll('main > .stack-page'));
+  const links = Array.from(document.querySelectorAll('.nav-links a[href^="#"]:not(.nav-cta)'));
+  if(!pages.length || !links.length) return;
+  let ticking = false;
+  const run = ()=>{
+    ticking = false;
+    const line = window.innerHeight * 0.45;
+    let current = null;
+    for(let i = pages.length - 1; i >= 0; i--){
+      if(pages[i].getBoundingClientRect().top <= line){ current = pages[i]; break; }
+    }
+    const id = current ? '#' + current.id : '#top';
+    links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+  };
+  const onScroll = ()=>{ if(!ticking){ ticking = true; requestAnimationFrame(run); } };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  run();
+})();
+
+/* ---------- PAGE PULL-UP ----------
+   Each page is pinned once its bottom edge reaches the bottom of the
+   screen, so the next page rises over it like a sheet being pulled up.
+   The page underneath dims and shrinks slightly as it gets covered. */
+(function(){
+  if(GS_REDUCED) return;
+  const hero  = document.querySelector('.hero-blank');
+  const pages = Array.from(document.querySelectorAll('main > .stack-page'));
+  if(!pages.length) return;
+  const layers = hero ? [hero, ...pages] : pages.slice();
+  const root = document.documentElement;
+  root.classList.add('js-stack');
+
+  pages.forEach((p, i)=>{
+    p.style.zIndex = String(i + 2);
+    if(i < pages.length - 1) p.classList.add('stick');   // last page just scrolls
+  });
+
+  /* A page taller than the screen sticks with a negative "top" so that
+     its BOTTOM edge is what gets pinned. */
+  function setTops(){
+    const vh = window.innerHeight;
+    pages.forEach(p=>{
+      if(p.classList.contains('stick')) p.style.top = (vh - p.offsetHeight) + 'px';
+    });
+  }
+  setTops();
+  let lastVh = window.innerHeight;
+  window.addEventListener('resize', setTops);
+  window.addEventListener('load', setTops);
+  window.addEventListener('scroll', ()=>{                 // phone address bars change the visible height while scrolling
+    if(window.innerHeight !== lastVh){ lastVh = window.innerHeight; setTops(); }
+  }, { passive: true });
+  if('ResizeObserver' in window){
+    const ro = new ResizeObserver(setTops);
+    pages.forEach(p => ro.observe(p));
+  }
+
+  /* Native #anchor jumps use a page's *current* (pinned) position, which
+     would land in the middle of the page. Scroll to each page's true
+     layout position instead. */
+  const main = document.querySelector('main');
+  function pageTop(page){
+    let y = main.offsetTop;                          // includes the hero video runway
+    for(const c of main.children){                   // pages AND spacers (e.g. portfolio dwell)
+      if(c === page) break;
+      y += c.offsetHeight;
+    }
+    return y;
+  }
+  document.addEventListener('click', e=>{
+    const a = e.target.closest('a[href^="#"]');
+    if(!a) return;
+    const hash = a.getAttribute('href');
+    let y = null;
+    if(hash === '#top') y = 0;
+    else{
+      const target = pages.find(p => '#' + p.id === hash);
+      if(target) y = pageTop(target);
+    }
+    if(y === null) return;
+    e.preventDefault();
+    window.scrollTo({ top: y, behavior: 'smooth' });
+    try{ history.pushState(null, '', hash); }catch(_){}
+  });
+  // deep link, e.g. index.html#portfolio (used by the admin "View Site" button)
+  window.addEventListener('load', ()=>{
+    const target = pages.find(p => '#' + p.id === location.hash);
+    if(target) window.scrollTo({ top: pageTop(target), behavior: 'instant' });
+  });
+
+  let ticking = false;
+  function update(){
+    ticking = false;
+    const vh = window.innerHeight;
+    for(let i = 0; i < layers.length - 1; i++){
+      const t = layers[i + 1].getBoundingClientRect().top;
+      const q = gsClamp(1 - t / vh);
+      const under = layers[i];
+      const val = q.toFixed(3);
+      if(under._cover !== val){
+        under._cover = val;
+        under.style.setProperty('--cover', val);
+      }
+      if(under === hero){
+        const nowCovered = q >= 1;
+        if(nowCovered !== under.classList.contains('covered')){
+          under.classList.toggle('covered', nowCovered);
+          if(window.gsNavRefresh) window.gsNavRefresh();   // nav looks at what is under it
+        }
+      }
+    }
+  }
+  const onScroll = ()=>{ if(!ticking){ ticking = true; requestAnimationFrame(update); } };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  update();
+})();
+
+/* ---------- HERO VIDEO (page 1) ----------
+   The video NEVER plays by itself. Scroll position drives it, so the WHOLE
+   video plays only while you scroll through page 1 (down = forward,
+   up = rewind) and holds still the moment you stop. The hero stays pinned
+   while a "runway" of scroll distance passes; when the video reaches its
+   last frame the About page pulls up over it.
+   Smoothness comes from two things:
+     1. assets/hero-*.mp4 have every frame as a keyframe, so seeking to
+        any frame is instant (normal videos only have one per second).
+     2. The playhead eases toward the scroll target every animation
+        frame, so wheel "notches" become a glide instead of jumps.
+   Two versions of the video exist (see data-landscape / data-portrait on
+   the <video> tag): wide screens get a 16:9 version, phones held upright
+   get the tall original.                                                  */
+(function(){
+  const hero   = document.querySelector('.hero-blank');
+  const video  = document.getElementById('heroVideo');
+  const runway = document.getElementById('heroRunway');
+  if(!hero || !video || !runway || GS_REDUCED) return;   // reduced motion: stays on the first frame
+
+  const FPS  = parseFloat(video.dataset.fps) || 30;      // frame rate of the video files
+  const EASE = 0.3;                                      // 0-1: higher = stops sooner after you stop scrolling
+  const IS_IOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+                 (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);   // incl. iPadOS
+  const canMp4 = !!video.canPlayType('video/mp4; codecs="avc1.42E01E"');
+  let dur = 0, runwayPx = 1, shown = 0, running = false, mode = null, priming = false;
+
+  // Never autoplay. The only legitimate play() is the invisible iOS priming step below.
+  video.muted = true; video.defaultMuted = true;
+  video.autoplay = false; video.loop = false; video.controls = false;
+  video.addEventListener('play', ()=>{ if(!priming) video.pause(); });
+
+  const wantedMode = () => window.innerHeight > window.innerWidth ? 'portrait' : 'landscape';
+
+  function load(m){
+    mode = m;
+    dur = 0; shown = 0; runwayPx = 1;
+    runway.style.height = '0px';
+    const base = video.dataset[m];
+    video.poster = base + '-poster.jpg';
+    hero.style.backgroundImage = 'url(' + base + '-poster.jpg)';   // shown while the video is hidden/loading
+    video.src = base + (canMp4 ? '.mp4' : '.webm');
+    video.load();
+  }
+
+  function setRunway(){
+    // ~5 screens of scrolling for a 14s video (never fewer than 2.5, more than 6).
+    // Measured in vh (the *large* viewport), so it does not change when a phone's
+    // address bar shows/hides while scrolling.
+    const screens = Math.min(6, Math.max(2.5, dur * 0.35));
+    runway.style.height = (screens * 100) + 'vh';
+    runwayPx = runway.offsetHeight || 1;
+  }
+
+  function frame(){
+    if(!dur){ running = false; return; }
+    const p = gsClamp(window.scrollY / runwayPx);
+    const target = p * dur;
+    shown += (target - shown) * EASE;
+    if(Math.abs(target - shown) < 0.5 / FPS) shown = target;   // settled within half a frame
+
+    // snap to a real frame (avoids redundant seeks) and stay off the final tick
+    const lastFrame = Math.round(dur * FPS) - 1;
+    const n = Math.min(lastFrame, Math.round(shown * FPS));
+    const showing = Math.floor(video.currentTime * FPS + 0.001);      // frame currently on screen
+    if(!video.seeking && showing !== n) video.currentTime = (n + 0.5) / FPS;   // aim mid-frame: robust to timestamp rounding
+
+    hero.classList.toggle('started', window.scrollY > 30);
+    if(shown !== target || video.seeking) requestAnimationFrame(frame);
+    else running = false;
+  }
+  function wake(){ if(!running){ running = true; requestAnimationFrame(frame); } }
+
+  // iOS Safari will not decode frames for scrubbing until play() has been called once.
+  // Do it while the video is hidden behind its poster, pause at once, then hand over to scroll.
+  function prime(){
+    priming = true;
+    video.classList.add('priming');
+    const reveal = ()=>video.classList.remove('priming');
+    const finish = ok => {
+      priming = false;
+      try{ video.pause(); }catch(e){}
+      if(!ok){ failed(); reveal(); return; }      // iOS refused (e.g. Low Power Mode): keep a normal static hero
+      video.addEventListener('seeked', reveal, { once: true });
+      setTimeout(reveal, 400);
+      wake();
+    };
+    let pr = null;
+    try{ pr = video.play(); }catch(e){}
+    if(pr && pr.then) pr.then(()=>finish(true), ()=>finish(false));
+    else finish(true);
+  }
+
+  function ready(){
+    if(!video.duration || !isFinite(video.duration)) return;
+    const first = !dur;
+    dur = video.duration;
+    setRunway();
+    if(IS_IOS && first) prime(); else wake();
+  }
+  function failed(){                       // video missing/unsupported: keep a normal static hero
+    dur = 0;
+    runway.style.height = '0px';
+    runwayPx = 1;
+  }
+
+  video.addEventListener('loadedmetadata', ready);
+  video.addEventListener('error', failed);
+  load(wantedMode());
+
+  window.addEventListener('scroll', wake, { passive: true });
+  let rz = null;
+  window.addEventListener('resize', ()=>{
+    clearTimeout(rz);
+    rz = setTimeout(()=>{
+      if(wantedMode() !== mode) load(wantedMode());        // phone rotated / window reshaped
+      else if(dur){ setRunway(); wake(); }
+    }, 150);
+  });
+})();
+
+/* ---------- PORTFOLIO SLIDES — ONE BY ONE, DRIVEN BY SCROLL POSITION ----------
+   Every .slide-item slides in from the LEFT edge to its place. Each slide
+   gets a fixed stretch of scroll distance, and they follow each other in
+   page order (left to right, top to bottom), so they arrive one after
+   another like a cascade.
+   The position of every slide is a pure function of scrollY, so:
+     - it can never fall behind, however fast you scroll;
+     - the schedule is squeezed if needed so the LAST slide is finished
+       before the next page (Contact) starts rising over Portfolio;
+     - scrolling back up slides them back out, and down again replays.     */
+(function(){
+  if(GS_REDUCED) return;                       // reduced motion: everything just shows
+  const main = document.querySelector('main');
+  if(!main) return;
+
+  const ENTRY = 0.95;                          // a slide may start once its slot is 5% up from the bottom
+  const ease  = t => 1 - Math.pow(1 - t, 3);
+  let items = [];
+
+  // Position of an element in the document, from layout only (ignores sticky offsets and transforms).
+  function measure(el){
+    let x = 0, y = 0, n = el;
+    while(n && n.parentElement !== main){ x += n.offsetLeft; y += n.offsetTop; n = n.offsetParent; }
+    if(!n) return null;                        // n is now the page (direct child of main)
+    return { x, y: y + pageTop(n), page: n };
+  }
+  function pageTop(page){
+    let top = main.offsetTop;
+    for(const c of main.children){ if(c === page) break; top += c.offsetHeight; }
+    return top;
+  }
+
+  function refresh(){
+    const vh = window.innerHeight;
+    items = [];
+    Array.from(document.querySelectorAll('.slide-item')).forEach(el=>{
+      const m = measure(el);
+      if(!m) return;
+      items.push({
+        el, page: m.page,
+        entry: m.y - vh * ENTRY,               // scrollY at which this slide's slot peeks in
+        dist: m.x + el.offsetWidth + 30,       // start fully off-screen to the left
+        s: 0, D: 1, last: undefined
+      });
+    });
+
+    // plan each page's slides separately
+    const D0 = Math.min(260, Math.max(150, vh * 0.22));   // scroll distance one slide takes to arrive
+    const S0 = D0 * 0.3;                                   // gap before the next slide starts
+    const pages = Array.from(new Set(items.map(o => o.page)));
+    pages.forEach(page=>{
+      const group = items.filter(o => o.page === page);
+      // finish before the following page starts rising over this one
+      let nextPage = page.nextElementSibling;
+      while(nextPage && !nextPage.classList.contains('stack-page')) nextPage = nextPage.nextElementSibling;
+      const limit = nextPage ? pageTop(nextPage) - vh - vh * 0.08 : Infinity;
+
+      let f = 1, starts;
+      for(;;){                                              // forward pass; shrink the plan if it does not fit
+        const D = D0 * f, S = S0 * f;
+        starts = [];
+        group.forEach((o, i)=>{ starts.push(i ? Math.max(o.entry, starts[i - 1] + S) : o.entry); });
+        if(starts[starts.length - 1] + D <= limit || f <= 0.4) break;
+        f -= 0.1;
+      }
+      const D = D0 * f, S = S0 * f;
+      group.forEach((o, i)=>{                               // backward pass: hard guarantee of finishing in time
+        const latest = limit - D - (group.length - 1 - i) * S;
+        o.s = Math.min(starts[i], latest);
+        o.D = D;
+        o.el.style.zIndex = String(100 - items.indexOf(o));  // later slides glide out from behind earlier ones
+      });
+    });
+    queue();
+  }
+
+  let ticking = false;
+  function update(){
+    ticking = false;
+    const y = window.scrollY;
+    items.forEach(o=>{
+      const local = Math.min(1, Math.max(0, (y - o.s) / o.D));
+      if(local === o.last) return;
+      o.last = local;
+      if(local >= 1){
+        o.el.style.transform = '';
+        o.el.style.opacity = '';
+      }else{
+        o.el.style.transform = `translate3d(${(-(1 - ease(local)) * o.dist).toFixed(1)}px,0,0)`;
+        o.el.style.opacity = Math.min(1, local * 2.4).toFixed(3);
+      }
+    });
+  }
+  function queue(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }
+
+  window.gsSlideRefresh = refresh;             // gallery.js calls this after rendering
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', refresh);
+  window.addEventListener('load', refresh);
+  if('ResizeObserver' in window){              // page heights change -> re-plan
+    const ro = new ResizeObserver(()=>{ refresh(); });
+    main.querySelectorAll(':scope > .stack-page').forEach(p => ro.observe(p));
+  }
+  refresh();
+})();
+
+/* ---------- PAGE EFFECTS (pages 2-4: About, Services, Portfolio) ----------
+   Two things happen as you scroll a page:
+     1. Its full-page background photo drifts slowly upward (a parallax
+        "ken burns" feel) — added on pages with [data-drift].
+     2. Pictures inside a .fx-curtain frame start zoomed in and slide
+        top-to-bottom into their normal place as they scroll into view,
+        like a curtain opening, then stay in a light drift after that.
+   Everything here reads scroll position and writes a CSS variable; there
+   is no per-element scroll listener, so it stays cheap with many images. */
+(function(){
+  if(GS_REDUCED){ document.querySelectorAll('.fx-img').forEach(el=>{ el.style.setProperty('--py','0%'); el.style.setProperty('--sz','1'); }); return; }
+  document.documentElement.classList.add('js-fx');
+
+  const drifts = Array.from(document.querySelectorAll('.stack-page[data-drift] > .page-bg > .page-bg-img'));
+  const frames = Array.from(document.querySelectorAll('.fx-frame.fx-curtain')).map(el=>{
+    const img = el.querySelector('.fx-img');
+    return img ? { el, img, done: false } : null;
+  }).filter(Boolean);
+  if(!drifts.length && !frames.length) return;
+
+  let ticking = false;
+  function update(){
+    ticking = false;
+    const vh = window.innerHeight;
+
+    // background drift: tied to the page's own scroll progress (0 at its top, 1 at its bottom)
+    drifts.forEach(bg=>{
+      const page = bg.closest('.stack-page');
+      const r = page.getBoundingClientRect();
+      const p = gsClamp(-r.top / Math.max(1, r.height - vh));
+      bg.style.transform = `translate3d(0,${(-p * 8).toFixed(2)}vh,0)`;
+    });
+
+    // curtain images: zoomed-in + shifted up while below the fold, ease down to normal as they arrive,
+    // then keep a small drift so the page still feels alive while it is on screen
+    frames.forEach(o=>{
+      const r = o.el.getBoundingClientRect();
+      const enter = gsClamp((vh * 0.92 - r.top) / (vh * 0.55));   // 0 = not reached yet, 1 = fully arrived
+      const eased = 1 - Math.pow(1 - enter, 3);
+      if(enter >= 1){
+        const settle = gsClamp((vh * 0.5 - r.top) / (vh * 0.9));  // gentle drift once it is the focus of the screen
+        o.img.style.setProperty('--py', (-settle * 5).toFixed(2) + '%');
+        o.img.style.setProperty('--sz', '1');
+        o.el.classList.add('is-in');
+      }else{
+        o.img.style.setProperty('--py', (-25 + eased * 25).toFixed(2) + '%');
+        o.img.style.setProperty('--sz', (1.22 - eased * 0.22).toFixed(3));
+        o.el.classList.remove('is-in');
+      }
+    });
+  }
+  function queue(){ if(!ticking){ ticking = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', queue);
+  window.addEventListener('load', queue);
+  queue();
+})();
+
+/* ---------- Scroll reveal (fade/slide + left-right slides) ---------- */
+(function(){
+  const targets = document.querySelectorAll('.reveal, .reveal-scale, .slide-left, .slide-right');
+  if(!targets.length) return;
+  if(!('IntersectionObserver' in window)){ targets.forEach(el => el.classList.add('in')); return; }   // very old browsers: just show
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('in');
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.18, rootMargin: '0px 0px -60px 0px' });
+  targets.forEach((el, i)=>{
+    el.style.transitionDelay = (i % 4) * 90 + 'ms';
+    io.observe(el);
+  });
+})();
+
+/* ---------- Animated counters ---------- */
+(function(){
+  const counters = document.querySelectorAll('[data-counter]');
+  if(!counters.length) return;
+  const animate = (el)=>{
+    const target = parseFloat(el.getAttribute('data-counter'));
+    const suffix = el.getAttribute('data-suffix') || '';
+    const dur = 1400;
+    const start = performance.now();
+    const step = (now)=>{
+      const p = Math.min((now - start) / dur, 1);
+      const eased = 1 - Math.pow(1 - p, 3);
+      const val = Math.round(target * eased);
+      el.textContent = val + suffix;
+      if(p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        animate(entry.target);
+        io.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.6 });
+  counters.forEach(c=>io.observe(c));
+})();
+
+/* ---------- Particle / drafting-line canvas background ----------
+   A quiet field of gold dots connected by thin lines — used on
+   the blank hero (page 1) and on inner page headers.            */
+(function(){
+  document.querySelectorAll('canvas[data-particles]').forEach(canvas=>{
+    const ctx = canvas.getContext('2d');
+    let w, h, points, visible = true;
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(e => { visible = e[0].isIntersecting; }).observe(canvas);
+    }
+
+    function resize(){
+      w = canvas.width = canvas.offsetWidth * devicePixelRatio;
+      h = canvas.height = canvas.offsetHeight * devicePixelRatio;
+    }
+    function makePoints(){
+      const density = canvas.dataset.density ? parseInt(canvas.dataset.density) : 60;
+      const count = Math.max(24, Math.floor((w * h) / (density * 9000)));
+      points = Array.from({length: count}, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.25,
+        vy: (Math.random() - 0.5) * 0.25
+      }));
+    }
+    function tick(){
+      if(!visible || document.hidden || canvas.closest('.hero-blank.covered')){ requestAnimationFrame(tick); return; }
+      ctx.clearRect(0, 0, w, h);
+      points.forEach(p=>{
+        p.x += p.vx; p.y += p.vy;
+        if(p.x < 0 || p.x > w) p.vx *= -1;
+        if(p.y < 0 || p.y > h) p.vy *= -1;
+      });
+      for(let i=0;i<points.length;i++){
+        for(let j=i+1;j<points.length;j++){
+          const dx = points[i].x - points[j].x, dy = points[i].y - points[j].y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          const max = 140 * devicePixelRatio;
+          if(dist < max){
+            ctx.strokeStyle = `rgba(200,162,74,${0.16 * (1 - dist / max)})`;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(points[i].x, points[i].y);
+            ctx.lineTo(points[j].x, points[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+      points.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 1.6 * devicePixelRatio, 0, Math.PI*2);
+        ctx.fillStyle = 'rgba(228,198,122,0.55)';
+        ctx.fill();
+      });
+      requestAnimationFrame(tick);
+    }
+    resize(); makePoints();
+    window.addEventListener('resize', ()=>{ resize(); makePoints(); });
+    tick();
+  });
+})();
+
+/* ============================================================
+   G.S. CONSTRUCTION — Site Gallery + Admin (panel opens at index.html#admin)
+   Images are stored in this browser's localStorage. There is no
+   server/database behind this, so uploads made here persist on
+   THIS device/browser only — they won't appear for other visitors
+   until the site is wired up to a real backend. See the note
+   banner in the admin panel for details.
+   ============================================================ */
+
+const GS_GALLERY_KEY   = 'gsGalleryV1';
+const GS_ADMIN_SESSION = 'gsAdminAuthed';
+
+/* Admin login. NOTE: this check runs in the browser, so anyone who views
+   this file can read it. Change these before going live, and move the
+   check to a server when the site gets a backend. */
+const GS_ADMIN_USER = 'abhay';
+const GS_ADMIN_PASS = 'abhay123';
+
+const GS_DEFAULT_GALLERY = [
+  { id: 'd1', name: 'Residential Township — Site Progress', src: 'https://picsum.photos/seed/gsconstruction1/700/700' },
+  { id: 'd2', name: 'Commercial Complex — Structural Frame', src: 'https://picsum.photos/seed/gsconstruction2/700/700' },
+  { id: 'd3', name: 'Industrial Shed — Steel Framework',     src: 'https://picsum.photos/seed/gsconstruction3/700/700' },
+  { id: 'd4', name: 'Civil Works — Road & Drainage',         src: 'https://picsum.photos/seed/gsconstruction4/700/700' },
+  { id: 'd5', name: 'On-Site Team at Work',                  src: 'assets/gallery-onsite-team.jpg' },
+  { id: 'd6', name: 'Finishing & Interior Works',            src: 'assets/gallery-finishing-interior.jpg' },
+  { id: 'd7', name: 'Site Survey & Planning',                src: 'assets/gallery-site-survey.jpg' },
+  { id: 'd8', name: 'Completed Handover',                    src: 'https://picsum.photos/seed/gsconstruction8/700/700' }
+];
+
+function gsGetGallery(){
+  try{
+    const raw = localStorage.getItem(GS_GALLERY_KEY);
+    if(!raw){
+      localStorage.setItem(GS_GALLERY_KEY, JSON.stringify(GS_DEFAULT_GALLERY));
+      return GS_DEFAULT_GALLERY.slice();
+    }
+    return JSON.parse(raw);
+  }catch(e){ return GS_DEFAULT_GALLERY.slice(); }
+}
+function gsSaveGallery(list){
+  try{
+    localStorage.setItem(GS_GALLERY_KEY, JSON.stringify(list));
+    return true;
+  }catch(e){   // Safari private mode, or storage full (large photos)
+    alert('Could not save: browser storage is full or blocked. Try a smaller image, or a normal (non-private) window.');
+    return false;
+  }
+}
+
+/* ---------- Public gallery render (portfolio.html) ---------- */
+function gsRenderPublicGallery(){
+  const grid = document.getElementById('galleryGrid');
+  if(!grid) return;
+  const items = gsGetGallery();
+  if(!items.length){
+    grid.innerHTML = '<div class="gallery-empty">No site images yet — check back soon.</div>';
+    return;
+  }
+  grid.innerHTML = items.map(it => `
+    <div class="gallery-item slide-item">
+      <img src="${it.src}" alt="${gsEscape(it.name)}" loading="lazy">
+      <div class="cap">${gsEscape(it.name)}</div>
+    </div>
+  `).join('');
+  // let the scroll-slide system (script.js) pick up the newly rendered items
+  if(window.gsSlideRefresh) window.gsSlideRefresh();
+}
+
+function gsEscape(str){
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+/* ---------- Admin: auth + opening/closing the panel ---------- */
+function gsIsAdminAuthed(){
+  try{ return sessionStorage.getItem(GS_ADMIN_SESSION) === 'true'; }catch(e){ return false; }
+}
+function gsSetAdminAuthed(on){
+  try{
+    if(on) sessionStorage.setItem(GS_ADMIN_SESSION, 'true');
+    else sessionStorage.removeItem(GS_ADMIN_SESSION);
+  }catch(e){}
+}
+/* show the login form or the dashboard, depending on whether you are logged in */
+function gsAdminViews(){
+  const login = document.getElementById('loginView');
+  const dash  = document.getElementById('dashboardView');
+  if(!login || !dash) return;
+  const authed = gsIsAdminAuthed();
+  login.style.display = authed ? 'none' : '';
+  dash.style.display  = authed ? 'block' : 'none';
+  if(authed) gsRenderAdminGrid();
+}
+function gsAdminLogout(){
+  gsSetAdminAuthed(false);
+  gsAdminViews();
+}
+/* the panel is an overlay that is open whenever the address ends in #admin */
+function gsAdminRoute(){
+  const app = document.getElementById('adminApp');
+  if(!app) return;
+  const open = location.hash === '#admin';
+  const wasOpen = app.classList.contains('open');
+  app.classList.toggle('open', open);
+  document.documentElement.classList.toggle('admin-open', open);
+  if(open) gsAdminViews();
+  if(wasOpen && !open) gsRenderPublicGallery();      // show any changes made in the panel on the site behind it
+}
+function gsCloseAdmin(){
+  try{ history.pushState(null, '', location.pathname + location.search); }catch(e){ location.hash = ''; }
+  gsAdminRoute();
+}
+function gsInitAdminLogin(){
+  const form = document.getElementById('adminLoginForm');
+  if(!form) return;
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const user = document.getElementById('adminUser').value.trim();
+    const pass = document.getElementById('adminPass').value;
+    const err = document.getElementById('loginError');
+    if(user === GS_ADMIN_USER && pass === GS_ADMIN_PASS){
+      err.style.display = 'none';
+      form.reset();
+      gsSetAdminAuthed(true);
+      gsAdminViews();
+    }else{
+      err.style.display = 'block';
+    }
+  });
+}
+
+/* ---------- Admin: manage grid ---------- */
+function gsRenderAdminGrid(){
+  const grid = document.getElementById('adminGrid');
+  if(!grid) return;
+  const items = gsGetGallery();
+  grid.innerHTML = items.map(it => `
+    <div class="admin-item" data-id="${it.id}">
+      <img src="${it.src}" alt="">
+      <div class="body">
+        <input type="text" class="name-input" value="${gsEscape(it.name)}">
+        <div class="row-btns">
+          <button class="btn btn-navy btn-sm save-btn">Save name</button>
+          <button class="btn btn-danger btn-sm del-btn">Delete</button>
+        </div>
+      </div>
+    </div>
+  `).join('') || '<p style="color:var(--text-soft)">No images yet — add one below.</p>';
+
+  grid.querySelectorAll('.save-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const wrap = btn.closest('.admin-item');
+      const id = wrap.dataset.id;
+      const newName = wrap.querySelector('.name-input').value.trim() || 'Untitled';
+      const list = gsGetGallery().map(it => it.id === id ? {...it, name: newName} : it);
+      gsSaveGallery(list);
+      gsFlash(btn, 'Saved ✓');
+    });
+  });
+  grid.querySelectorAll('.del-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const wrap = btn.closest('.admin-item');
+      const id = wrap.dataset.id;
+      if(!confirm('Remove this image from the site gallery?')) return;
+      const list = gsGetGallery().filter(it => it.id !== id);
+      gsSaveGallery(list);
+      gsRenderAdminGrid();
+    });
+  });
+}
+function gsFlash(btn, text){
+  const old = btn.textContent;
+  btn.textContent = text;
+  setTimeout(()=>{ btn.textContent = old; }, 1200);
+}
+
+/* ---------- Admin: add new image ---------- */
+function gsInitAddImageForm(){
+  const form = document.getElementById('addImageForm');
+  if(!form) return;
+  form.addEventListener('submit', (e)=>{
+    e.preventDefault();
+    const fileInput = document.getElementById('newImageFile');
+    const nameInput = document.getElementById('newImageName');
+    const file = fileInput.files[0];
+    const name = nameInput.value.trim() || 'Untitled site photo';
+    if(!file){ alert('Choose an image file first.'); return; }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const list = gsGetGallery();
+      list.unshift({ id: 'img_' + Date.now(), name, src: reader.result });
+      if(!gsSaveGallery(list)) return;
+      form.reset();
+      gsRenderAdminGrid();
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  gsRenderPublicGallery();
+  gsInitAdminLogin();
+  gsInitAddImageForm();
+  gsAdminRoute();
+  window.addEventListener('hashchange', gsAdminRoute);
+});
+
+/* ---------- Contact form ---------- */
+document.getElementById('contactForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  document.getElementById('formMsg').classList.add('ok');
+  this.reset();
+  /* NOTE: this form currently only shows a confirmation message.
+     To actually receive enquiries, connect it to a service like
+     Formspree, EmailJS, or your own backend endpoint. */
+});
+</script>
+</body>
+</html>

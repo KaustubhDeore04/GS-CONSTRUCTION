@@ -1,0 +1,16 @@
+{
+  "name": "gs-construction-site",
+  "version": "1.0.0",
+  "description": "G.S. Construction website served with Node.js/Express",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "express": "^4.19.2"
+  }
+}
